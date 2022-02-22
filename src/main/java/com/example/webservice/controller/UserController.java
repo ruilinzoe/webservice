@@ -96,8 +96,8 @@ public class UserController {
         userData.setFirstname(noteDetails.getFirstname());
         userData.setLastname(noteDetails.getLastname());
         userData.setPassword(passwordEncoder.encode(noteDetails.getPassword()));
-
-//        User updatedNote = noteRepository.save(userData);
+//        noteRepository.save(userData);
+        User updatedNote = noteRepository.save(userData);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
 //        return updatedNote;
     }
