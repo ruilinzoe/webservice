@@ -25,3 +25,9 @@ cd desktop/CSYE6225/webservice
 http://localhost:8080/healthz
 
 # webservice
+
+# Assignment 5:
+
+packer build ami.json
+
+aws cloudformation create-stack --stack-name XXX --template-body file://6225-infra.yaml --parameters ParameterKey=CloudImageID,ParameterValue=ami-XXX
