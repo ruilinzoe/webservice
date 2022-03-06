@@ -26,7 +26,7 @@ http://localhost:8080/healthz
 
 # webservice
 
-# Assignment 5:
+# Assignment  5:
 
 packer build ami.json
 
