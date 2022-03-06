@@ -31,7 +31,7 @@ Parameters:
   CloudImageID:
     Description: imageID
     Type: String
-    Default: ami-03ec4378ddbd602c7
+    Default: ami-0cc33b2a7dd789a10
 
 Resources:
   VPC:
@@ -135,11 +135,15 @@ Resources:
         - !Ref WebAppSecurityGroup
       DisableApiTermination: true
       UserData:
-        Fn::Base64: !Sub |
+        Fn::Base64:
+          !Sub |
           #!/bin/bash
+          crontab -l | { cat; echo "@reboot (cd /tmp && mvn -N io.takari:maven:wrapper && ./mvnw spring-boot:run)"; } | crontab -
           cd /tmp
+          ls -a
           mvn -N io.takari:maven:wrapper
           ./mvnw spring-boot:run
+          
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
           Ebs:
