@@ -1,0 +1,54 @@
+{
+    "variables": {
+        "aws_access_key": "AKIA354HZBXASQD4NC4V",
+        "aws_secret_key": "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",
+        "name": "{{timestamp}}",
+        "aws_region": "us-west-2",
+        "source_ami": "ami-0b9f27b05e1de14e9",
+        "vpc_id": "vpc-0ec1d5b6fc4f1ebba"
+    },
+    "builders": [{
+        "type": "amazon-ebs",
+        "access_key": "{{user `aws_access_key`}}",
+        "secret_key": "{{user `aws_secret_key`}}",
+        "region": "{{user `aws_region`}}",
+        "source_ami": "{{user `source_ami`}}",
+        "instance_type": "t2.micro",
+        "ssh_username": "ec2-user",
+        "ami_name": "csye6225_fall_2021_{{timestamp}}",
+        "ami_description": "AMi for csye 6225",
+        "ami_users": ["820086640065", "574594835790"],
+
+
+        "launch_block_device_mappings": [{
+                "device_name": "/dev/xvda",
+                "volume_size": 8,
+                "volume_type": "gp2",
+                "delete_on_termination": true
+            }
+
+        ],
+
+        "associate_public_ip_address": false,
+        "tags": {
+            "Name": "{{user `name`}}"
+        }
+    }],
+    "provisioners": [
+
+        {
+            "type": "file",
+            "source": "{{template_dir}}/",
+            "destination": "/tmp/"
+        },
+
+        {
+            "type": "shell",
+            "scripts": [
+                "scripts/base.sh"
+            ],
+            "execute_command": "{{ .Vars }} sudo -E sh '{{ .Path }}'",
+            "pause_before": "10s"
+        }
+    ]
+}
