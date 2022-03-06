@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.regex.Matcher;
+import java.util.Date;
 import java.util.regex.Pattern;
 
 
@@ -70,6 +71,9 @@ public class UserController {
 
         BCryptPasswordEncoder bCryptPasswordEncoder=new BCryptPasswordEncoder();
         note.setPassword(bCryptPasswordEncoder.encode(note.getPassword()));
+        Date newDate = new Date();
+        note.setCreatedAt(newDate);
+        note.setUpdatedAt(newDate);
 //        return new GetUser();
         return GetUser.saveToNewUser(noteRepository.save(note));
     }
