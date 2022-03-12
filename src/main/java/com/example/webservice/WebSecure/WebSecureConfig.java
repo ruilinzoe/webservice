@@ -1,4 +1,4 @@
-package com.example.webservice;
+package com.example.webservice.WebSecure;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +29,8 @@ public class WebSecureConfig extends WebSecurityConfigurerAdapter {
     public void configAuthentication(AuthenticationManagerBuilder auth) throws Exception {
         auth.jdbcAuthentication().passwordEncoder(new BCryptPasswordEncoder())
                 .dataSource(dataSource)
-                .authoritiesByUsernameQuery("select email_address, password from users where email_address=?")
-                .usersByUsernameQuery("select email_address, password, 1 from users where email_address=?");
+                .authoritiesByUsernameQuery("select username, password from users where username=?")
+                .usersByUsernameQuery("select username, password, 1 from users where username=?");
     }
 
     @Override
@@ -43,7 +43,7 @@ public class WebSecureConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/*", "/v1/user*", "/v1/user/","/v1/user").permitAll()
+                .antMatchers("/*", "/v1/user*", "/v1/user/","/v1/user","/health").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()

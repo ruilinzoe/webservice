@@ -26,8 +26,12 @@ http://localhost:8080/healthz
 
 # webservice
 
-# Assignment  5:
+# Assignment 5:
 
 packer build ami.json
 
 aws cloudformation create-stack --stack-name XXX --template-body file://6225-infra.yaml --parameters ParameterKey=CloudImageID,ParameterValue=ami-XXX
+
+aws cloudformation create-stack --stack-name tst5 --template-body file://6225-infra.yaml --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=CloudImageID,ParameterValue=ami-06c3981b43956c5f7
+
+aws cloudformation create-stack --stack-name ttt --template-body file://6225-infra.yaml --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=CloudImageID,ParameterValue=ami-06c3981b43956c5f7
