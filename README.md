@@ -34,4 +34,4 @@ aws cloudformation create-stack --stack-name XXX --template-body file://6225-inf
 
 aws cloudformation create-stack --stack-name tst5 --template-body file://6225-infra.yaml --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=CloudImageID,ParameterValue=ami-06c3981b43956c5f7
 
-aws cloudformation create-stack --stack-name ttt --template-body file://6225-infra.yaml --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=CloudImageID,ParameterValue=ami-06c3981b43956c5f7
+aws cloudformation create-stack --stack-name testDB --template-body file://6225-infra.yaml --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=CloudImageID,ParameterValue=ami-03d0a97a3fcab3aeb
