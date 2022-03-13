@@ -48,6 +48,16 @@ Parameters:
     Type: String
     Default: ami-0cc33b2a7dd789a10
 
+  AccessKeyId:
+    Description: Please enter AccessKeyId
+    Type: String
+    Default: AKIA354HZBXASQD4NC4V
+
+  AccessKey:
+    Description: Please enter name for the S3 bucket
+    Type: String
+    Default: 4HmP8/LARlfTjYhcIlP+4Umz/l3a1mGC47YSz5kD
+
   DatabaseType:
     Type: String
     Default: 'MySQL'
