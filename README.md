@@ -32,10 +32,6 @@ packer build ami.json
 
 aws cloudformation create-stack --stack-name XXX --template-body file://6225-infra.yaml --parameters ParameterKey=CloudImageID,ParameterValue=ami-XXX
 
-aws cloudformation create-stack --stack-name tst5 --template-body file://6225-infra.yaml --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=CloudImageID,ParameterValue=ami-06c3981b43956c5f7
-
-aws cloudformation create-stack --stack-name DBtest --template-body file://6225-infra.yaml --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=CloudImageID,ParameterValue=ami-03c4774f0bf14f58d
-
 AKIA354HZBXASQD4NC4V
 4HmP8/LARlfTjYhcIlP+4Umz/l3a1mGC47YSz5kD
 
