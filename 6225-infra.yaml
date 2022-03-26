@@ -18,20 +18,30 @@ Parameters:
     Type: String
     Default: 10.192.10.0/24
 
-  PrivateSubnet1CIDR:
-    Description: Please enter the IP range (CIDR notation) for the public subnet in the first Availability Zone
+  PublicSubnet2CIDR:
+    Description: Please enter the IP range (CIDR notation) for the public subnet in the second Availability Zone
     Type: String
     Default: 10.192.11.0/24
 
-  PrivateSubnet2CIDR:
+  PublicSubnet3CIDR:
     Description: Please enter the IP range (CIDR notation) for the public subnet in the second Availability Zone
     Type: String
     Default: 10.192.12.0/24
 
+  PrivateSubnet1CIDR:
+    Description: Please enter the IP range (CIDR notation) for the public subnet in the first Availability Zone
+    Type: String
+    Default: 10.192.20.0/24
+
+  PrivateSubnet2CIDR:
+    Description: Please enter the IP range (CIDR notation) for the public subnet in the second Availability Zone
+    Type: String
+    Default: 10.192.21.0/24
+
   PrivateSubnet3CIDR:
     Description: Please enter the IP range (CIDR notation) for the public subnet in the second Availability Zone
     Type: String
-    Default: 10.192.13.0/24
+    Default: 10.192.22.0/24
 
   KeyName:
     Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
@@ -65,7 +75,7 @@ Parameters:
   BucketName:
     Description: Please enter name for the S3 bucket
     Type: String
-    Default: dev.domain.tld
+    Default: dev.spicyrice.me
 
   EngineVersion:
     Type: String
@@ -106,34 +116,23 @@ Resources:
         - Key: Name
           Value: !Sub ${EnvironmentName} Public Subnet (AZ1)
 
-  PrivateSubnet1:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      AvailabilityZone: !Select [0, !GetAZs '']
-      CidrBlock: !Ref PrivateSubnet1CIDR
-      MapPublicIpOnLaunch: true
-      Tags:
-        - Key: Name
-          Value: !Sub ${EnvironmentName} Public Subnet (AZ1)
-
-  PrivateSubnet2:
+  PublicSubnet2:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
       AvailabilityZone: !Select [1, !GetAZs '']
-      CidrBlock: !Ref PrivateSubnet2CIDR
+      CidrBlock: !Ref PublicSubnet2CIDR
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
           Value: !Sub ${EnvironmentName} Public Subnet (AZ2)
 
-  PrivateSubnet3:
+  PublicSubnet3:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
       AvailabilityZone: !Select [2, !GetAZs '']
-      CidrBlock: !Ref PrivateSubnet3CIDR
+      CidrBlock: !Ref PublicSubnet3CIDR
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
@@ -161,30 +160,75 @@ Resources:
       RouteTableId: !Ref PublicRouteTable
       SubnetId: !Ref PublicSubnet1
 
+  PublicSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnet2
+
+  PublicSubnet3RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnet3
+
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [0, !GetAZs '']
+      CidrBlock: !Ref PrivateSubnet1CIDR
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Private Subnet (AZ1)
+
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [1, !GetAZs '']
+      CidrBlock: !Ref PrivateSubnet2CIDR
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Private Subnet (AZ2)
+
+  PrivateSubnet3:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [2, !GetAZs '']
+      CidrBlock: !Ref PrivateSubnet3CIDR
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Public Subnet (AZ3)
+
   PrivateRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref VPC
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName} Public Routes
+          Value: !Sub ${EnvironmentName} Private Routes
 
   PrivateSubnet1RouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      RouteTableId: !Ref PublicRouteTable
+      RouteTableId: !Ref PrivateRouteTable
       SubnetId: !Ref PrivateSubnet1
 
   PrivateSubnet2RouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      RouteTableId: !Ref PublicRouteTable
+      RouteTableId: !Ref PrivateRouteTable
       SubnetId: !Ref PrivateSubnet2
 
   PrivateSubnet3RouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      RouteTableId: !Ref PublicRouteTable
+      RouteTableId: !Ref PrivateRouteTable
       SubnetId: !Ref PrivateSubnet3
 
   NoIngressSecurityGroup:
@@ -194,45 +238,45 @@ Resources:
       GroupDescription: 'Security group with no ingress rule'
       VpcId: !Ref VPC
 
-  EC2Instance:
-    Type: AWS::EC2::Instance
-    Properties:
-      ImageId: !Ref CloudImageID
-      InstanceType: t2.micro
-      KeyName: !Ref KeyName
-      SubnetId: !Ref PublicSubnet1
-      SecurityGroupIds:
-        - !Ref InstanceSecurityGroup
-      DisableApiTermination: true
-      UserData:
-        Fn::Base64: !Sub |
-          #!/bin/bash
-          echo "spring.datasource.url = jdbc:mysql://${DBinstance.Endpoint.Address}:3306/csye6225" >> /tmp/src/main/resources/application.properties
-          echo "spring.datasource.username = csye6225" >> /tmp/src/main/resources/application.properties
-          echo "spring.datasource.password =  Zoe123456789!" >> /tmp/src/main/resources/application.properties
+  # EC2Instance:
+  #   Type: AWS::EC2::Instance
+  #   Properties:
+  #     ImageId: !Ref CloudImageID
+  #     InstanceType: t2.micro
+  #     KeyName: !Ref KeyName
+  #     SubnetId: !Ref PublicSubnet1
+  #     SecurityGroupIds:
+  #       - !Ref WebAppSecurityGroup
+  #     DisableApiTermination: true
+  #     IamInstanceProfile: !Ref WebInstanceProfile
+  #     UserData:
+  #       Fn::Base64: !Sub |
+  #         #!/bin/bash
+  #         echo "spring.datasource.url = jdbc:mysql://${DBinstance.Endpoint.Address}:3306/csye6225" >> /tmp/src/main/resources/application.properties
+  #         echo "spring.datasource.username = csye6225" >> /tmp/src/main/resources/application.properties
+  #         echo "spring.datasource.password =  Zoe123456789!" >> /tmp/src/main/resources/application.properties
 
-          echo "server.port=8080" >> /tmp/src/main/resources/application.properties
-          echo "spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQL5InnoDBDialect" >> /tmp/src/main/resources/application.properties
-          echo "spring.jpa.hibernate.ddl-auto = update" >> /tmp/src/main/resources/application.properties
+  #         echo "server.port=8080" >> /tmp/src/main/resources/application.properties
+  #         echo "spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQL5InnoDBDialect" >> /tmp/src/main/resources/application.properties
+  #         echo "spring.jpa.hibernate.ddl-auto = update" >> /tmp/src/main/resources/application.properties
 
-          echo "aws.access_key_id = ${AccessKeyId}" >> /tmp/src/main/resources/application.properties
-          echo "aws.secret_access_key= ${AccessKey}" >> /tmp/src/main/resources/application.properties
-          echo "aws.s3.region= us-west-2" >> /tmp/src/main/resources/application.properties
-          echo "aws.s3.bucket= ${S3Bucket}" >> /tmp/src/main/resources/application.properties
+  #         echo "aws.access_key_id = ${AccessKeyId}" >> /tmp/src/main/resources/application.properties
+  #         echo "aws.secret_access_key= ${AccessKey}" >> /tmp/src/main/resources/application.properties
+  #         echo "aws.s3.region= us-west-2" >> /tmp/src/main/resources/application.properties
+  #         echo "aws.s3.bucket= ${S3Bucket}" >> /tmp/src/main/resources/application.properties
 
-          crontab -l | { cat; echo "@reboot (cd /tmp && mvn -N io.takari:maven:wrapper && ./mvnw spring-boot:run)"; } | crontab -
-          cd /tmp
-          ls -a
-          mvn -N io.takari:maven:wrapper
-          ./mvnw spring-boot:run
-
-      BlockDeviceMappings:
-        - DeviceName: /dev/xvda
-          Ebs:
-            VolumeType: gp2
-            VolumeSize: '20'
-            DeleteOnTermination: 'false'
-            Encrypted: 'true'
+  #         crontab -l | { cat; echo "@reboot (cd /tmp && mvn -N io.takari:maven:wrapper && ./mvnw spring-boot:run)"; } | crontab -
+  #         cd /tmp
+  #         ls -a
+  #         mvn -N io.takari:maven:wrapper
+  #         ./mvnw spring-boot:run
+  #     BlockDeviceMappings:
+  #       - DeviceName: /dev/xvda
+  #         Ebs:
+  #           VolumeType: gp2
+  #           VolumeSize: '20'
+  #           DeleteOnTermination: 'false'
+  #           Encrypted: 'true'
 
   RDSDBSubnetGroup:
     Type: 'AWS::RDS::DBSubnetGroup'
@@ -278,9 +322,9 @@ Resources:
         - IpProtocol: tcp
           FromPort: 3306
           ToPort: 3306
-          SourceSecurityGroupId: !GetAtt InstanceSecurityGroup.GroupId
+          SourceSecurityGroupId: !GetAtt WebAppSecurityGroup.GroupId
 
-  InstanceSecurityGroup:
+  WebAppSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       VpcId: !Ref VPC
@@ -289,19 +333,19 @@ Resources:
         - IpProtocol: tcp
           FromPort: 8080
           ToPort: 8080
-          CidrIp: 0.0.0.0/0
+          SourceSecurityGroupId: !GetAtt LoadBalancerSecurityGroup.GroupId
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
-          CidrIp: 0.0.0.0/0
+          SourceSecurityGroupId: !GetAtt LoadBalancerSecurityGroup.GroupId
         - IpProtocol: tcp
           FromPort: 443
           ToPort: 443
-          CidrIp: 0.0.0.0/0
+          SourceSecurityGroupId: !GetAtt LoadBalancerSecurityGroup.GroupId
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
-          CidrIp: 0.0.0.0/0
+          SourceSecurityGroupId: !GetAtt LoadBalancerSecurityGroup.GroupId
 
   S3Bucket:
     Type: AWS::S3::Bucket
@@ -369,3 +413,213 @@ Resources:
             Action:
               - 'sts:AssumeRole'
       RoleName: 'EC2-CSYE6225'
+
+  WebInstanceProfile:
+    Type: 'AWS::IAM::InstanceProfile'
+    Properties:
+      InstanceProfileName: 'web-application-ec2-instance-profile'
+      Path: '/'
+      Roles:
+        - !Ref IAMRole
+
+  LoadBalancerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: 'Allow HTTP/HTTPS and SSH inbound and outbound traffic'
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+
+  asgLaunchConfiguration:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      AssociatePublicIpAddress: true
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: 20
+            VolumeType: 'gp3'
+            DeleteOnTermination: true
+      ImageId: !Ref CloudImageID
+      IamInstanceProfile: !Ref WebInstanceProfile
+      InstanceType: t2.micro
+      KeyName: csye6225
+      SecurityGroups:
+        - !Ref WebAppSecurityGroup
+      LaunchConfigurationName: 'asg_launch_config'
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          echo "spring.datasource.url = jdbc:mysql://${DBinstance.Endpoint.Address}:3306/csye6225" >> /tmp/src/main/resources/application.properties
+          echo "spring.datasource.username = csye6225" >> /tmp/src/main/resources/application.properties
+          echo "spring.datasource.password =  Zoe123456789!" >> /tmp/src/main/resources/application.properties
+
+          echo "server.port=8080" >> /tmp/src/main/resources/application.properties
+          echo "spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQL5InnoDBDialect" >> /tmp/src/main/resources/application.properties
+          echo "spring.jpa.hibernate.ddl-auto = update" >> /tmp/src/main/resources/application.properties
+
+          echo "aws.access_key_id = ${AccessKeyId}" >> /tmp/src/main/resources/application.properties
+          echo "aws.secret_access_key= ${AccessKey}" >> /tmp/src/main/resources/application.properties
+          echo "aws.s3.region= us-west-2" >> /tmp/src/main/resources/application.properties
+          echo "aws.s3.bucket= ${S3Bucket}" >> /tmp/src/main/resources/application.properties
+
+          crontab -l | { cat; echo "@reboot (cd /tmp && mvn -N io.takari:maven:wrapper && ./mvnw spring-boot:run)"; } | crontab -
+          cd /tmp
+          ls -a
+          mvn -N io.takari:maven:wrapper
+          ./mvnw spring-boot:run
+
+  asgWebApp:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AutoScalingGroupName: !Sub ${AWS::StackName}-asg
+      AvailabilityZones:
+        - !Select [0, !GetAZs '']
+        - !Select [1, !GetAZs '']
+        - !Select [2, !GetAZs '']
+      Cooldown: '60'
+      LaunchConfigurationName: !Ref asgLaunchConfiguration
+      DesiredCapacity: '1'
+      HealthCheckGracePeriod: 90
+      HealthCheckType: EC2
+      MaxSize: '5'
+      MinSize: '1'
+      NewInstancesProtectedFromScaleIn: false
+      Tags:
+        - Key: Application
+          Value: WebApp
+          PropagateAtLaunch: 'true'
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-asg
+          PropagateAtLaunch: 'true'
+      TargetGroupARNs:
+        - !Ref loadBalancerTargetGroup
+      VPCZoneIdentifier:
+        - !Ref PublicSubnet1
+        - !Ref PublicSubnet2
+        - !Ref PublicSubnet3
+
+  myScaleOutPolicy:
+    Type: AWS::AutoScaling::ScalingPolicy
+    Properties:
+      AdjustmentType: ChangeInCapacity
+      AutoScalingGroupName: !Ref asgWebApp
+      ScalingAdjustment: '1'
+
+  CPUAlarmHigh:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      EvaluationPeriods: '1'
+      Statistic: Average
+      Threshold: '5'
+      AlarmDescription:
+        Alarm if CPU too high or metric disappears indicating instance
+        is down
+      Period: '60'
+      AlarmActions:
+        - !Ref myScaleOutPolicy
+      Namespace: AWS/EC2
+      Dimensions:
+        - Name: AutoScalingGroupName
+          Value: !Ref asgWebApp
+      ComparisonOperator: GreaterThanThreshold
+      MetricName: CPUUtilization
+
+  myScaleInPolicy:
+    Type: AWS::AutoScaling::ScalingPolicy
+    Properties:
+      AdjustmentType: ChangeInCapacity
+      AutoScalingGroupName: !Ref asgWebApp
+      ScalingAdjustment: '-1'
+
+  CPUAlarmLow:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      EvaluationPeriods: '1'
+      Statistic: Average
+      Threshold: '3'
+      AlarmDescription:
+        Alarm if CPU too high or metric disappears indicating instance
+        is down
+      Period: '60'
+      AlarmActions:
+        - !Ref myScaleInPolicy
+      Namespace: AWS/EC2
+      Dimensions:
+        - Name: AutoScalingGroupName
+          Value: !Ref asgWebApp
+      ComparisonOperator: LessThanThreshold
+      MetricName: CPUUtilization
+
+  loadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      IpAddressType: ipv4
+      LoadBalancerAttributes:
+        - Key: idle_timeout.timeout_seconds
+          Value: '60'
+      Name: !Sub ${AWS::StackName}-load-balancer
+      Scheme: internet-facing
+      SecurityGroups:
+        - !Ref LoadBalancerSecurityGroup
+      Subnets:
+        - !Ref PublicSubnet1
+        - !Ref PublicSubnet2
+        - !Ref PublicSubnet3
+      Tags:
+        - Key: Application
+          Value: WebApp
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-load-balancer
+      Type: application
+
+  loadBalancerTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: 90
+      HealthCheckPath: '/healthz'
+      HealthCheckPort: '8080'
+      HealthCheckProtocol: 'HTTP'
+      HealthCheckTimeoutSeconds: 60
+      HealthyThresholdCount: 2
+      IpAddressType: ipv4
+      Name: !Sub ${AWS::StackName}-lb-tg
+      Port: 8080
+      Protocol: 'HTTP'
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-lb-tg
+      TargetGroupAttributes:
+        - Key: deregistration_delay.timeout_seconds
+          Value: '20'
+      TargetType: instance
+      UnhealthyThresholdCount: 2
+      VpcId: !Ref VPC
+
+  loadBalancerListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref loadBalancerTargetGroup
+      LoadBalancerArn: !Ref loadBalancer
+      Port: 80
+      Protocol: HTTP
+  
+  myDNSRecord:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneName: dev.spicyrice.me.
+      RecordSets:
+      - Name: dev.spicyrice.me.
+        Type: A
+        AliasTarget:
+          HostedZoneId: !GetAtt 'loadBalancer.CanonicalHostedZoneID'
+          DNSName: !GetAtt 'loadBalancer.DNSName'
