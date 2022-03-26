@@ -1,4 +1,4 @@
-# web service
+
 
 CSYE6225 cloud computation
 
@@ -25,3 +25,16 @@ cd desktop/CSYE6225/webservice
 http://localhost:8080/healthz
 
 # webservice
+
+# Assignment 5:
+
+packer build ami.json
+
+aws cloudformation create-stack --stack-name XXX --template-body file://6225-infra.yaml --parameters ParameterKey=CloudImageID,ParameterValue=ami-XXX
+
+AKIA354HZBXASQD4NC4V
+4HmP8/LARlfTjYhcIlP+4Umz/l3a1mGC47YSz5kD
+
+aws cloudformation create-stack --stack-name test6 --template-body file://6225-infra.yaml --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=CloudImageID,ParameterValue=ami-061c9729e6832fb25 ParameterKey=BucketName,ParameterValue=prod.domain.tld ParameterKey=AccessKeyId,ParameterValue=AKIA354HZBXASQD4NC4V ParameterKey=AccessKey,ParameterValue=4HmP8/LARlfTjYhcIlP+4Umz/l3a1mGC47YSz5kD
+
+aws cloudformation create-stack --stack-name ass6 --template-body file://6225-infra.yaml --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=CloudImageID,ParameterValue=ami-061c9729e6832fb25 ParameterKey=BucketName,ParameterValue=prod.domain.tld ParameterKey=AccessKeyId,ParameterValue=AKIA354HZBXASQD4NC4V ParameterKey=AccessKey,ParameterValue=4HmP8/LARlfTjYhcIlP+4Umz/l3a1mGC47YSz5kD
