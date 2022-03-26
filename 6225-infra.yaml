@@ -323,7 +323,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       VpcId: !Ref VPC
-      GroupDescription: "Enable SSH access via port 22 and http access"
+      GroupDescription: 'Enable SSH access via port 22 and http access'
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 22
@@ -440,7 +440,7 @@ Resources:
         - DeviceName: /dev/xvda
           Ebs:
             VolumeSize: 20
-            VolumeType: "gp3"
+            VolumeType: 'gp3'
             DeleteOnTermination: true
       ImageId: !Ref CloudImageID
       IamInstanceProfile: !Ref WebInstanceProfile
@@ -450,8 +450,7 @@ Resources:
         - !Ref WebAppSecurityGroup
       LaunchConfigurationName: 'asg_launch_config'
       UserData:
-        Fn::Base64:
-          !Sub |
+        Fn::Base64: !Sub |
           #!/bin/bash
 
           cd /tmp 
@@ -464,9 +463,9 @@ Resources:
           echo "aws.secret_access_key= ${AccessKey}" >> /tmp/jdbc.properties
           echo "aws.s3.region= us-west-2" >> /tmp/jdbc.properties
           echo "aws.s3.bucket= ${S3Bucket}" >> /tmp/jdbc.properties
-          crontab -l | { cat; echo "@reboot (cd /tmp && java -jar demo1-0.0.1-SNAPSHOT.jar --spring.config.location=file:///tmp/jdbc.properties)"; } | crontab -
+          crontab -l | { cat; echo "@reboot (cd /tmp && java -jar webservice-0.0.1-SNAPSHOT.jar --spring.config.location=file:///tmp/jdbc.properties)"; } | crontab -
           cd /tmp
-          java -jar demo1-0.0.1-SNAPSHOT.jar --spring.config.location=file:///tmp/jdbc.properties
+          java -jar webservice-0.0.1-SNAPSHOT.jar --spring.config.location=file:///tmp/jdbc.properties
 
   asgWebApp:
     Type: AWS::AutoScaling::AutoScalingGroup
@@ -487,10 +486,10 @@ Resources:
       Tags:
         - Key: Application
           Value: WebApp
-          PropagateAtLaunch: "true"
+          PropagateAtLaunch: 'true'
         - Key: Name
           Value: !Sub ${AWS::StackName}-asg
-          PropagateAtLaunch: "true"
+          PropagateAtLaunch: 'true'
       TargetGroupARNs:
         - !Ref loadBalancerTargetGroup
       VPCZoneIdentifier:
@@ -604,14 +603,14 @@ Resources:
       LoadBalancerArn: !Ref loadBalancer
       Port: 80
       Protocol: HTTP
-  
+
   myDNSRecord:
     Type: AWS::Route53::RecordSetGroup
     Properties:
       HostedZoneName: dev.spicyrice.me.
       RecordSets:
-      - Name: dev.spicyrice.me.
-        Type: A
-        AliasTarget:
-          HostedZoneId: !GetAtt 'loadBalancer.CanonicalHostedZoneID'
-          DNSName: !GetAtt 'loadBalancer.DNSName'
+        - Name: dev.spicyrice.me.
+          Type: A
+          AliasTarget:
+            HostedZoneId: !GetAtt 'loadBalancer.CanonicalHostedZoneID'
+            DNSName: !GetAtt 'loadBalancer.DNSName'
