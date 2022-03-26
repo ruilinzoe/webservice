@@ -35,4 +35,6 @@ aws cloudformation create-stack --stack-name XXX --template-body file://6225-inf
 AKIA354HZBXASQD4NC4V
 4HmP8/LARlfTjYhcIlP+4Umz/l3a1mGC47YSz5kD
 
-aws cloudformation create-stack --stack-name testdevDB --template-body file://6225-infra.yaml --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=CloudImageID,ParameterValue=ami-0d7c323460517fec8 ParameterKey=BucketName,ParameterValue=prod.domain.tld ParameterKey=AccessKeyId,ParameterValue=AKIA354HZBXASQD4NC4V ParameterKey=AccessKey,ParameterValue=4HmP8/LARlfTjYhcIlP+4Umz/l3a1mGC47YSz5kD
+aws cloudformation create-stack --stack-name test6 --template-body file://6225-infra.yaml --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=CloudImageID,ParameterValue=ami-061c9729e6832fb25 ParameterKey=BucketName,ParameterValue=prod.domain.tld ParameterKey=AccessKeyId,ParameterValue=AKIA354HZBXASQD4NC4V ParameterKey=AccessKey,ParameterValue=4HmP8/LARlfTjYhcIlP+4Umz/l3a1mGC47YSz5kD
+
+aws cloudformation create-stack --stack-name ass6 --template-body file://6225-infra.yaml --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=CloudImageID,ParameterValue=ami-061c9729e6832fb25 ParameterKey=BucketName,ParameterValue=prod.domain.tld ParameterKey=AccessKeyId,ParameterValue=AKIA354HZBXASQD4NC4V ParameterKey=AccessKey,ParameterValue=4HmP8/LARlfTjYhcIlP+4Umz/l3a1mGC47YSz5kD
