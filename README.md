@@ -24,7 +24,7 @@ cd desktop/CSYE6225/webservice
 
 http://localhost:8080/healthz
 
-# webservice
+# web  service
 
 # Assignment 5:
 
