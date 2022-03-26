@@ -48,11 +48,6 @@ Parameters:
     Type: AWS::EC2::KeyPair::KeyName
     Default: csye6225
 
-  InstanceType:
-    Description: WebServer EC2 instance type
-    Type: String
-    Default: t2.micro
-
   CloudImageID:
     Description: imageID
     Type: String
@@ -328,11 +323,11 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       VpcId: !Ref VPC
-      GroupDescription: Enable SSH access via port 22 and http access
+      GroupDescription: "Enable SSH access via port 22 and http access"
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: 8080
-          ToPort: 8080
+          FromPort: 22
+          ToPort: 22
           SourceSecurityGroupId: !GetAtt LoadBalancerSecurityGroup.GroupId
         - IpProtocol: tcp
           FromPort: 80
@@ -343,8 +338,8 @@ Resources:
           ToPort: 443
           SourceSecurityGroupId: !GetAtt LoadBalancerSecurityGroup.GroupId
         - IpProtocol: tcp
-          FromPort: 22
-          ToPort: 22
+          FromPort: 8080
+          ToPort: 8080
           SourceSecurityGroupId: !GetAtt LoadBalancerSecurityGroup.GroupId
 
   S3Bucket:
@@ -445,7 +440,7 @@ Resources:
         - DeviceName: /dev/xvda
           Ebs:
             VolumeSize: 20
-            VolumeType: 'gp3'
+            VolumeType: "gp3"
             DeleteOnTermination: true
       ImageId: !Ref CloudImageID
       IamInstanceProfile: !Ref WebInstanceProfile
@@ -455,26 +450,23 @@ Resources:
         - !Ref WebAppSecurityGroup
       LaunchConfigurationName: 'asg_launch_config'
       UserData:
-        Fn::Base64: !Sub |
+        Fn::Base64:
+          !Sub |
           #!/bin/bash
-          echo "spring.datasource.url = jdbc:mysql://${DBinstance.Endpoint.Address}:3306/csye6225" >> /tmp/src/main/resources/application.properties
-          echo "spring.datasource.username = csye6225" >> /tmp/src/main/resources/application.properties
-          echo "spring.datasource.password =  Zoe123456789!" >> /tmp/src/main/resources/application.properties
 
-          echo "server.port=8080" >> /tmp/src/main/resources/application.properties
-          echo "spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQL5InnoDBDialect" >> /tmp/src/main/resources/application.properties
-          echo "spring.jpa.hibernate.ddl-auto = update" >> /tmp/src/main/resources/application.properties
-
-          echo "aws.access_key_id = ${AccessKeyId}" >> /tmp/src/main/resources/application.properties
-          echo "aws.secret_access_key= ${AccessKey}" >> /tmp/src/main/resources/application.properties
-          echo "aws.s3.region= us-west-2" >> /tmp/src/main/resources/application.properties
-          echo "aws.s3.bucket= ${S3Bucket}" >> /tmp/src/main/resources/application.properties
-
-          crontab -l | { cat; echo "@reboot (cd /tmp && mvn -N io.takari:maven:wrapper && ./mvnw spring-boot:run)"; } | crontab -
+          cd /tmp 
+          echo "spring.datasource.url = jdbc:mysql://${DBinstance.Endpoint.Address}:3306/csye6225" >> /tmp/jdbc.properties
+          echo "spring.datasource.username = csye6225" >> /tmp/jdbc.properties
+          echo "spring.datasource.password =  Zoe123456789!" >> /tmp/jdbc.properties
+          echo "spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQL5InnoDBDialect" >> /tmp/jdbc.properties
+          echo "spring.jpa.hibernate.ddl-auto = update" >> /tmp/jdbc.properties
+          echo "aws.access_key_id = ${AccessKeyId}" >> /tmp/jdbc.properties
+          echo "aws.secret_access_key= ${AccessKey}" >> /tmp/jdbc.properties
+          echo "aws.s3.region= us-west-2" >> /tmp/jdbc.properties
+          echo "aws.s3.bucket= ${S3Bucket}" >> /tmp/jdbc.properties
+          crontab -l | { cat; echo "@reboot (cd /tmp && java -jar demo1-0.0.1-SNAPSHOT.jar --spring.config.location=file:///tmp/jdbc.properties)"; } | crontab -
           cd /tmp
-          ls -a
-          mvn -N io.takari:maven:wrapper
-          ./mvnw spring-boot:run
+          java -jar demo1-0.0.1-SNAPSHOT.jar --spring.config.location=file:///tmp/jdbc.properties
 
   asgWebApp:
     Type: AWS::AutoScaling::AutoScalingGroup
@@ -495,10 +487,10 @@ Resources:
       Tags:
         - Key: Application
           Value: WebApp
-          PropagateAtLaunch: 'true'
+          PropagateAtLaunch: "true"
         - Key: Name
           Value: !Sub ${AWS::StackName}-asg
-          PropagateAtLaunch: 'true'
+          PropagateAtLaunch: "true"
       TargetGroupARNs:
         - !Ref loadBalancerTargetGroup
       VPCZoneIdentifier:
