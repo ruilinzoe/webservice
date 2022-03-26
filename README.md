@@ -1,4 +1,4 @@
-# webservice
+# web service
 
 CSYE6225 cloud computation
 
