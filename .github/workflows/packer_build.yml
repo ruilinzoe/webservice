@@ -6,7 +6,7 @@ name: CI to build AMI
 env:
   ARTIFACT_NAME: csye6225-web-${{ github.sha }}.zip
   CODEDEPLOY_APPLICATION_NAME: mywebapp
-  CODEDEPLOY_APPLICATION_DEPLOYMENT_GROUP_NAME: wood-WebappDeploymentGroup-1EV8VYYWH235A
+  CODEDEPLOY_APPLICATION_DEPLOYMENT_GROUP_NAME: mywebapp
   AWS_REGION: us-west-2
 
 on:
@@ -52,7 +52,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
       - name: Copy Artifact to S3
         run: |
-          aws s3 sync ./codedeploy_artifact s3://${{ secrets.S3_CODEDEPLOY_BUCKET }}
+          aws s3 sync ./codedeploy_artifact s3://a7-bucket
       - name: CodeDeploy API call
         run: |
           output=$(aws deploy create-deployment \
@@ -60,7 +60,7 @@ jobs:
             --deployment-config-name CodeDeployDefault.AllAtOnce \
             --deployment-group-name ${{ env.CODEDEPLOY_APPLICATION_DEPLOYMENT_GROUP_NAME}} \
             --description "CSYE6225 - CodeDeploy" \
-            --s3-location bucket=${{ secrets.S3_CODEDEPLOY_BUCKET }},bundleType=zip,key=${{ env.ARTIFACT_NAME }} \
+            --s3-location bucket=a7-bucket,bundleType=zip,key=${{ env.ARTIFACT_NAME }} \
             --region ${{ env.AWS_REGION }} \
             --output json)
 
