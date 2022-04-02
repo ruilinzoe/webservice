@@ -8,12 +8,12 @@ file_exists_behavior: OVERWRITE
 
 hooks:
   ApplicationStop: 
-    -location: ./codedeploy/applicationStop.sh
-     timeout: 10
-  BeforeInstall: 
-    -location: ./codedeploy/beforedeploy.sh
-     timeout: 10
-  AfterInstall: 
-    -location: ./codedeploy/afterdeploy.sh
-     timeout: 10
+    -location: ./codedeploy/afterInstall.sh
+     timeout: 60
+  ApplicationStart:
+    -location: ./codedeploy/applicationStart.sh
+     timeout: 60
+  BeforeInstall:  
+    -location: ./codedeploy/beforeInstall.sh
+     timeout: 60
  

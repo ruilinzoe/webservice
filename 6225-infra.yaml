@@ -368,6 +368,21 @@ Resources:
                 StorageClass: STANDARD_IA
             ExpirationInDays: 365
 
+  FullS3Policy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: GHUploadToS3Policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - 's3-object-lambda:*'
+              - 's3:*'
+            Resource: '*'
+      Roles:
+        - !Ref IAMRole
+
   webapp:
     Type: 'AWS::CodeDeploy::Application'
     Properties:
@@ -399,6 +414,7 @@ Resources:
   WebappDeploymentGroup:
     Type: 'AWS::CodeDeploy::DeploymentGroup'
     Properties:
+      DeploymentGroupName: 'mywebapp'
       ApplicationName: !Ref webapp
       ServiceRoleArn: !GetAtt CodeDeployRole.Arn
       DeploymentConfigName: CodeDeployDefault.AllAtOnce
