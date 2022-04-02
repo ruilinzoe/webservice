@@ -1,7 +1,7 @@
 {
     "variables": {
-        "aws_access_key": "AKIA354HZBXASQD4NC4V",
-        "aws_secret_key": "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",
+        "aws_access_key": "AKIAYLSEFMVHOG2IVWVU",
+        "aws_secret_key": "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",
         "name": "{{timestamp}}",
         "aws_region": "us-west-2",
         "source_ami": "ami-0b9f27b05e1de14e9",
