@@ -1,11 +1,9 @@
 version: 0.0
 os: linux
-
 files: 
   - source: ./target/webservice-0.0.1-SNAPSHOT.jar
     destination: /tmp
 file_exists_behavior: OVERWRITE
-
 hooks:
   ApplicationInstall: 
     -location: ./codedeploy/afterInstall.sh
