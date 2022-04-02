@@ -1,0 +1,19 @@
+version: 0-0
+os: linus
+
+files: 
+  - source: ./target/webservice-0.0.1-SNAPSHOT.jar
+    destination: /tmp
+file_exists_behavior: OVERWRITE
+
+hooks:
+  ApplicationStop: 
+    -location: ./codedeploy/applicationStop.sh
+     timeout: 10
+  BeforeInstall: 
+    -location: ./codedeploy/beforedeploy.sh
+     timeout: 10
+  AfterInstall: 
+    -location: ./codedeploy/afterdeploy.sh
+     timeout: 10
+ 
