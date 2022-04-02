@@ -1,5 +1,5 @@
 
-CSYE6225 cloud computation
+CSYE6225  cloud computation
 
 # prerequisites
 
