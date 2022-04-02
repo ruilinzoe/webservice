@@ -32,7 +32,7 @@ public class UserController {
         return new ResponseEntity(new UserDetail(userInfo), HttpStatus.OK);
     }
 
-    @GetMapping("/healthz")
+    @GetMapping("/health")
     public String getEndPoint() {
         return String.format(" ");
     }
