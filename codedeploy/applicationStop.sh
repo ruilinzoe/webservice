@@ -1,1 +1,0 @@
-sudo rm -rf /home/csye6225

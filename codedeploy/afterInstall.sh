@@ -1,8 +1,8 @@
 #!/bin/bash
 sudo systemctl stop tomcat
 
-sudo rm -rf /var/lib/tomcat9/webapps/ROOT/tomcat
-sudo chown tomcat:tomcat /var/lib/tomcat9/webservice/ROOT.war
+sudo rm -rf /tmp/webservice-0.0.1-SNAPSHOT.jar
+sudo chown tomcat:tomcat /tmp/webservice-0.0.1-SNAPSHOT.jar
 
 # cleanup log files
 sudo rm -rf /tmp/logs/catalina*
