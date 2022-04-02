@@ -34,4 +34,7 @@ aws cloudformation create-stack --stack-name XXX --template-body file://6225-inf
 AKIA354HZBXASQD4NC4V
 4HmP8/LARlfTjYhcIlP+4Umz/l3a1mGC47YSz5kD
 
-aws cloudformation create-stack --stack-name wood --template-body file://6225-infra.yaml --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=CloudImageID,ParameterValue=ami-072aa2ae019d5ca39 ParameterKey=BucketName,ParameterValue=prod.domain.tld ParameterKey=AccessKeyId,ParameterValue=AKIA354HZBXASQD4NC4V ParameterKey=AccessKey,ParameterValue=4HmP8/LARlfTjYhcIlP+4Umz/l3a1mGC47YSz5kD
+aws cloudformation create-stack --stack-name wood --template-body file://6225-infra.yaml --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=CloudImageID,ParameterValue=ami-0c462211eaf1a2afa ParameterKey=BucketName,ParameterValue=prod.domain.tld ParameterKey=AccessKeyId,ParameterValue=AKIAYLSEFMVHOG2IVWVU ParameterKey=AccessKey,ParameterValue=U570/5HkKV4mqrIvyzq8lfEXQ6uYi/ULhDqKOKil
+
+export AWS_PROFILE=demo
+export AWS_REGION=us-west-2

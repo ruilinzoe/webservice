@@ -70,7 +70,7 @@ Parameters:
   BucketName:
     Description: Please enter name for the S3 bucket
     Type: String
-    Default: dev.spicyrice.me
+    Default: prod.spicyrice.me
 
   EngineVersion:
     Type: String
@@ -368,6 +368,43 @@ Resources:
                 StorageClass: STANDARD_IA
             ExpirationInDays: 365
 
+  webapp:
+    Type: 'AWS::CodeDeploy::Application'
+    Properties:
+      ApplicationName: 'mywebapp'
+      ComputePlatform: Server
+
+  CodeDeployRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: 'Allow'
+            Principal:
+              Service:
+                - 'codedeploy.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+        - PolicyName: allow-autoscaling
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ec2:*
+                  - autoscaling:*
+                Resource: '*'
+  WebappDeploymentGroup:
+    Type: 'AWS::CodeDeploy::DeploymentGroup'
+    Properties:
+      ApplicationName: !Ref webapp
+      ServiceRoleArn: !GetAtt CodeDeployRole.Arn
+      DeploymentConfigName: CodeDeployDefault.AllAtOnce
+      AutoScalingGroups:
+        - Ref: asgWebApp
+
   WebAppS3:
     Type: 'AWS::IAM::Policy'
     Properties:
@@ -607,9 +644,9 @@ Resources:
   myDNSRecord:
     Type: AWS::Route53::RecordSetGroup
     Properties:
-      HostedZoneName: dev.spicyrice.me.
+      HostedZoneName: prod.spicyrice.me.
       RecordSets:
-        - Name: dev.spicyrice.me.
+        - Name: prod.spicyrice.me.
           Type: A
           AliasTarget:
             HostedZoneId: !GetAtt 'loadBalancer.CanonicalHostedZoneID'
