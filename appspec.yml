@@ -1,17 +1,18 @@
 version: 0.0
 os: linux
-files: 
+
+files:
   - source: ./target/webservice-0.0.1-SNAPSHOT.jar
     destination: /tmp
 file_exists_behavior: OVERWRITE
+
 hooks:
-  ApplicationInstall: 
-    -location: ./codedeploy/afterInstall.sh
-     timeout: 60
-  ApplicationStart:
-    -location: ./codedeploy/applicationStart.sh
-     timeout: 60
-  ApplicationStop:  
-    -location: ./codedeploy/beforeInstall.sh
-     timeout: 60
- 
+  AfterInstall:
+    - location: ./codedeploy/afterInstall.sh
+      timeout: 180
+  ApplicationStar:
+    - location: ./codedeploy/applicationStart.sh
+      timeout: 180
+  ApplicationStop:
+    - location: ./codedeploy/beforeInstall.sh
+      timeout: 180
