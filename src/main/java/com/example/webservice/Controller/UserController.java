@@ -90,7 +90,7 @@ public class UserController {
 
         String returnString=jsonObject.toString();
         logger.info(returnString);
-        return String.format(" ");
+        return "String 12345";
     }
 
     @PostMapping("/v1/user")
