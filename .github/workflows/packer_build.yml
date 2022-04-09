@@ -27,12 +27,12 @@ jobs:
         run: mvn package
       - name: check file
         run: ls -al target
-      # - name: Build ami
-      #   run: PACKER_LOG=1 packer build ami.json
+      - name: Build ami
+        run: PACKER_LOG=1 packer build ami.json
       - name: Build Deployment Artifact
         run: |
           mkdir codedeploy_artifact
-          zip -r ${{ env.ARTIFACT_NAME }} target/webservice-0.0.1-SNAPSHOT.jar codedeploy/*.sh appspec.yml
+          zip -r ${{ env.ARTIFACT_NAME }} target/webservice-0.0.1-SNAPSHOT.jar codedeploy/*.sh appspec.yml cloudwatch-config.json
           pwd
           ls -al
           mv ${{ env.ARTIFACT_NAME }} codedeploy_artifact
