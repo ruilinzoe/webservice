@@ -532,9 +532,9 @@ Resources:
           #!/bin/bash
 
           cd /tmp 
-          touch /tmp/logs/webApp/csye6225.log
+          touch csye6225.log
           sudo chmod -R 777 /tmp
-          echo "logging.file =/tmp/logs/webApp/csye6225.log" >> /tmp/jdbc.properties
+          echo "logging.file.name =/tmp/logs/webApp/csye6225.log" >> /tmp/jdbc.properties
 
           echo "spring.datasource.url = jdbc:mysql://${DBinstance.Endpoint.Address}:3306/csye6225" >> /tmp/jdbc.properties
           echo "spring.datasource.username = csye6225" >> /tmp/jdbc.properties
@@ -660,7 +660,7 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
       HealthCheckIntervalSeconds: 90
-      HealthCheckPath: '/healthz'
+      HealthCheckPath: '/health'
       HealthCheckPort: '8080'
       HealthCheckProtocol: 'HTTP'
       HealthCheckTimeoutSeconds: 60
