@@ -1,12 +1,9 @@
 #!/bin/bash
-
-sudo systemctl stop tomcat
-
+# sudo systemctl stop tomcat
 sudo rm -rf /tmp/webservice-0.0.1-SNAPSHOT
+# sudo chown -R tomcat:tomcat /tmp/webservice-0.0.1-SNAPSHOT.jar
 
-sudo chown tomcat:tomcat /tmp/webservice-0.0.1-SNAPSHOT.jar
-
-# cleanup log files
+# cleanup log file
 sudo rm -rf /tmp/logs/catalina*
 sudo rm -rf /tmp/logs/*.log
 sudo rm -rf /tmp/logs/*.txt
@@ -14,5 +11,5 @@ sudo rm -rf /tmp/logs/*.txt
 sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
     -a fetch-config \
     -m ec2 \
-    -c file:/opt/cloudwatch-config.json \
+    -c file:/tmp/cloudwatch-config.json \
     -s

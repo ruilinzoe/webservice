@@ -548,9 +548,10 @@ Resources:
           echo "publish.metrics = true" >> /tmp/jdbc.properties
           echo "metrics.server.hostname = localhost" >> /tmp/jdbc.properties
           echo "metrics.server.port = 8125" >> /tmp/jdbc.properties
-          crontab -l | { cat; echo "@reboot (cd /tmp && java -jar webservice-0.0.1-SNAPSHOT.jar --spring.config.location=file:///tmp/jdbc.properties)"; } | crontab -
+          crontab -l | { cat; echo "@reboot (cd /tmp && nohup java -jar /tmp/webservice-0.0.1-SNAPSHOT.jar --spring.config.location=jdbc.properties > /dev/null 2> /dev/null < /dev/null & echo $! > ./pid.file &)"; } | crontab -
           cd /tmp
-          java -jar webservice-0.0.1-SNAPSHOT.jar --spring.config.location=file:///tmp/jdbc.properties
+          # java -jar webservice-0.0.1-SNAPSHOT.jar --spring.config.location=file:///tmp/jdbc.properties
+          nohup java -jar /tmp/webservice-0.0.1-SNAPSHOT.jar --spring.config.location=jdbc.properties > /dev/null 2> /dev/null < /dev/null & echo $! > ./pid.file &
 
   asgWebApp:
     Type: AWS::AutoScaling::AutoScalingGroup
