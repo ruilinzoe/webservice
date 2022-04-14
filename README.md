@@ -1,6 +1,6 @@
-# webservices
+# webservice s
 
-CSYE6225 cloud computation
+CSYE 6225 cloud computation
 
 # prerequisites
 
