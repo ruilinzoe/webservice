@@ -66,7 +66,7 @@ public class UserController {
         return new ResponseEntity(new UserDetail(userInfo), HttpStatus.OK);
     }
 
-    @GetMapping("/healthz")
+    @GetMapping("/health")
     public String getEndPoint() {
         logger.info("This is info message");
         logger.warn("This is warn message");
@@ -90,7 +90,6 @@ public class UserController {
 
         String returnString=jsonObject.toString();
         logger.info(returnString);
-        return "String 12345";
     }
 
     @PostMapping("/v1/user")
