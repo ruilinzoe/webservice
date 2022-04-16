@@ -1,4 +1,4 @@
-package com.example.webservice.Controller;
+package com.example.webservice;
 
 import com.amazonaws.util.EC2MetadataUtils;
 import com.example.webservice.Dynamoconfig.DynamoService;
@@ -24,11 +24,9 @@ import com.google.gson.Gson;
 import org.apache.commons.lang3.RandomStringUtils;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
-
 import javax.validation.Valid;
 import java.util.Date;
 import java.util.Map;
-
 
 @RestController
 public class UserController {
@@ -55,12 +53,11 @@ public class UserController {
         logger.warn("this is warn message");
         logger.error("this is error message");
 
-
         statsDClient.incrementCounter("endpoint.self.http.get");
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("message","Get v1/user/self");
-        jsonObject.put("Current Data & Time",new Date().toString());
+        jsonObject.put("message", "Get v1/user/self");
+        jsonObject.put("Current Data & Time", new Date().toString());
 
         try {
             jsonObject.put("PrivateIpAddress", EC2MetadataUtils.getPrivateIpAddress());
@@ -70,7 +67,7 @@ public class UserController {
             jsonObject.put("EC2InstanceRegion", EC2MetadataUtils.getEC2InstanceRegion());
             jsonObject.put("AmiId", EC2MetadataUtils.getAmiId());
         } catch (Exception e) {
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
         }
 
         String returnString = jsonObject.toString();
@@ -94,8 +91,8 @@ public class UserController {
         statsDClient.incrementCounter("endpoint.healthz.http.get");
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("message","Get healthz");
-        jsonObject.put("Current Data & Time",new Date().toString());
+        jsonObject.put("message", "Get healthz");
+        jsonObject.put("Current Data & Time", new Date().toString());
 
         try {
             jsonObject.put("PrivateIpAddress", EC2MetadataUtils.getPrivateIpAddress());
@@ -105,7 +102,7 @@ public class UserController {
             jsonObject.put("EC2InstanceRegion", EC2MetadataUtils.getEC2InstanceRegion());
             jsonObject.put("AmiId", EC2MetadataUtils.getAmiId());
         } catch (Exception e) {
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
         }
 
         String returnString = jsonObject.toString();
@@ -122,8 +119,8 @@ public class UserController {
         statsDClient.incrementCounter("endpoint.user.http.post");
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("message","Post v1/user");
-        jsonObject.put("Current Data & Time",new Date().toString());
+        jsonObject.put("message", "Post v1/user");
+        jsonObject.put("Current Data & Time", new Date().toString());
 
         try {
             jsonObject.put("PrivateIpAddress", EC2MetadataUtils.getPrivateIpAddress());
@@ -133,23 +130,23 @@ public class UserController {
             jsonObject.put("EC2InstanceRegion", EC2MetadataUtils.getEC2InstanceRegion());
             jsonObject.put("AmiId", EC2MetadataUtils.getAmiId());
         } catch (Exception e) {
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
         }
 
         String returnString = jsonObject.toString();
         logger.info(returnString);
 
-        if (userRepo.existsByUsername(user.getUsername())){
+        if (userRepo.existsByUsername(user.getUsername())) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userRepo.save(user);
 
-        String token = RandomStringUtils.random(8,true,true);
-        dynamoService.putItemInTable("email",user.getUsername(),"Token", token);
+        String token = RandomStringUtils.random(8, true, true);
+        dynamoService.putItemInTable("email", user.getUsername(), "Token", token);
 
-        String link = "http://prod.ruilinzoe.me/v2/verifyUserEmail?email="
+        String link = "http://prod.spicyrice.me/v2/verifyUserEmail?email="
                 + user.getUsername() + "&token=" + token;
 
         Message message = new Message();
@@ -160,7 +157,6 @@ public class UserController {
         message.setMessage_type("String");
 
         this.snsUtil.publishSNSMessage(new Gson().toJson(message));
-
 
         return new ResponseEntity(new UserDetail(user), HttpStatus.CREATED);
     }
@@ -174,8 +170,8 @@ public class UserController {
         statsDClient.incrementCounter("endpoint.self.http.put");
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("message","Put v1/user/self");
-        jsonObject.put("Current Data & Time",new Date().toString());
+        jsonObject.put("message", "Put v1/user/self");
+        jsonObject.put("Current Data & Time", new Date().toString());
 
         try {
             jsonObject.put("PrivateIpAddress", EC2MetadataUtils.getPrivateIpAddress());
@@ -185,7 +181,7 @@ public class UserController {
             jsonObject.put("EC2InstanceRegion", EC2MetadataUtils.getEC2InstanceRegion());
             jsonObject.put("AmiId", EC2MetadataUtils.getAmiId());
         } catch (Exception e) {
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
         }
 
         String returnString = jsonObject.toString();
@@ -194,12 +190,12 @@ public class UserController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User userInfo = userRepo.findByUsername(auth.getName());
         if (!userInfo.getSetVerification_status()) {
-            return new ResponseEntity(String.format("Account unverified"),HttpStatus.NOT_FOUND);
+            return new ResponseEntity(String.format("Account unverified"), HttpStatus.NOT_FOUND);
         }
 
         System.out.println(user.getUsername());
 
-        if (!userInfo.getUsername().equals(user.getUsername())){
+        if (!userInfo.getUsername().equals(user.getUsername())) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
@@ -212,23 +208,21 @@ public class UserController {
 
     @GetMapping("/v2/verifyUserEmail")
     @ResponseBody
-    public ResponseEntity<?> verifyUser(@RequestParam String email, @RequestParam String token){
-        Map<String,AttributeValue> queryItem = dynamoService.getDynamoDBItem("Email",email);
-        if (queryItem.size()==0) {
+    public ResponseEntity<?> verifyUser(@RequestParam String email, @RequestParam String token) {
+        Map<String, AttributeValue> queryItem = dynamoService.getDynamoDBItem("Email", email);
+        if (queryItem.size() == 0) {
             return new ResponseEntity(String.format("Not in dynamo"), HttpStatus.NOT_FOUND);
         }
-        if (userRepo.existsByUsername(email)){
+        if (userRepo.existsByUsername(email)) {
             User userInfo = userRepo.findByUsername(email);
             userInfo.setSetVerification_status(true);
             userRepo.save(userInfo);
-            return new ResponseEntity(String.format("Account Verified"),HttpStatus.OK);
-        }else {
-            return new ResponseEntity(String.format("Invalid Link"),HttpStatus.NOT_FOUND);
+            return new ResponseEntity(String.format("Account Verified"), HttpStatus.OK);
+        } else {
+            return new ResponseEntity(String.format("Invalid Link"), HttpStatus.NOT_FOUND);
         }
 
     }
-
-
 
     // Get a Single Note
 
