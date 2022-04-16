@@ -42,6 +42,16 @@ public class User implements Serializable {
     @NotBlank
     private String password;
 
+    private Boolean setVerification_status;
+
+    public Boolean getSetVerification_status() {
+        return setVerification_status;
+    }
+
+    public void setSetVerification_status(Boolean setVerification_status) {
+        this.setVerification_status = setVerification_status;
+    }
+
     @Column(nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
