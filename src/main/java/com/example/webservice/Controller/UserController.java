@@ -1,10 +1,17 @@
 package com.example.webservice.Controller;
 
+
 import com.amazonaws.util.EC2MetadataUtils;
+import com.example.webservice.Dynamoconfig.DynamoService;
 import com.example.webservice.Model.User;
 import com.example.webservice.Model.UserDetail;
+import com.example.webservice.Model.Message;
+import com.example.webservice.SNSConfig.SNSUtil;
+
 import com.example.webservice.Repo.UserRepo;
+import com.google.gson.Gson;
 import com.timgroup.statsd.StatsDClient;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.DateTime;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -18,13 +25,16 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+
 import javax.validation.Valid;
+import java.util.Date;
 
 
 @RestController
 public class UserController {
 
     private final static Logger logger= LoggerFactory.getLogger(UserController.class);
+
 
     @Autowired
     private StatsDClient statsDClient;
@@ -34,6 +44,13 @@ public class UserController {
 
     @Autowired
     UserRepo userRepo;
+
+    @Autowired
+    private SNSUtil snsUtil;
+
+    @Autowired
+    DynamoService dynamoService;
+
 
     @GetMapping("/v1/user/self")
     public ResponseEntity<?> getUserInfo() {
@@ -124,6 +141,22 @@ public class UserController {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userRepo.save(user);
+
+        String token = RandomStringUtils.random(8,true,true);
+        dynamoService.putItemInTable("Email",user.getUsername(),"Token", token);
+
+        String link = "http://prod.spicyrice.me/v1/verifyUserEmail?email="
+                + user.getUsername() + "token=" + token;
+
+        Message message = new Message();
+        message.setFirst_name(user.getFirst_name());
+        message.setUsername(user.getUsername());
+        message.setOne_time_token(token);
+        message.setLink(link);
+        message.setMessage_type("String");
+
+        this.snsUtil.publishSNSMessage(new Gson().toJson(message));
+
         return new ResponseEntity(new UserDetail(user), HttpStatus.CREATED);
     }
 

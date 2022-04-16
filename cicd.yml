@@ -141,3 +141,29 @@ Resources:
             Action:
               - 'sts:AssumeRole'
       RoleName: 'CodeDeployEC2ServiceRole'
+
+  LambdaPolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: LambdaPolicy
+      Roles:
+        - !Ref CICDIAMRole
+      Users:
+        - 'ghactions-app'
+      PolicyDocument:
+        {
+          'Version': '2012-10-17',
+          'Statement':
+            [
+              {
+                'Effect': 'Allow',
+                'Action': ['logs:*'],
+                'Resource': 'arn:aws:logs:*:*:*',
+              },
+              {
+                'Effect': 'Allow',
+                'Action': ['s3:GetObject', 's3:PutObject'],
+                'Resource': 'arn:aws:s3:::*',
+              },
+            ],
+        }
