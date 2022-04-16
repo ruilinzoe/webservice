@@ -85,7 +85,7 @@ public class UserController {
         return new ResponseEntity(new UserDetail(userInfo), HttpStatus.OK);
     }
 
-    @GetMapping("/healthz")
+    @GetMapping("/health")
     public String getEndPoint() {
         logger.info("this is info message");
         logger.warn("this is warn message");
@@ -228,12 +228,6 @@ public class UserController {
 
     }
 
-    @GetMapping("/healthz11")
-    @ResponseBody
-    public String gettestPoint(@RequestParam String id) {
-
-        return String.format("success");
-    }
 
 
     // Get a Single Note
