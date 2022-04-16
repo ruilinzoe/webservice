@@ -56,12 +56,12 @@ Parameters:
   AccessKeyId:
     Description: Please enter AccessKeyId
     Type: String
-    Default: AKIA354HZBXASQD4NC4V
+    Default: AKIAYLSEFMVHOG2IVWVU
 
   AccessKey:
     Description: Please enter name for the S3 bucket
     Type: String
-    Default: 4HmP8/LARlfTjYhcIlP+4Umz/l3a1mGC47YSz5kD
+    Default: U570/5HkKV4mqrIvyzq8lfEXQ6uYi/ULhDqKOKil
 
   DatabaseType:
     Type: String
