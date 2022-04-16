@@ -552,6 +552,7 @@ Resources:
           echo "aws.dynamodb.tableName = TOKENS" >> /tmp/jdbc.properties
           echo "sns.topic.arn= arn:aws:sns:us-west-2:574594835790:message" >> /tmp/jdbc.properties
 
+
           crontab -l | { cat; echo "@reboot (cd /tmp && java -jar webservice-0.0.1-SNAPSHOT.jar --spring.config.location=file:///tmp/jdbc.properties)"; } | crontab -
           cd /tmp
           java -jar webservice-0.0.1-SNAPSHOT.jar --spring.config.location=file:///tmp/jdbc.properties
