@@ -9,9 +9,11 @@ import com.amazonaws.services.sns.model.PublishResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
+@Component
 public class SNSUtil {
     // Access key id will be read from the application.properties file during the application intialization.
     @Value("${aws.access_key_id}")
@@ -55,4 +57,3 @@ public class SNSUtil {
     }
 
 }
-
