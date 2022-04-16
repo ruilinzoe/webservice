@@ -145,7 +145,7 @@ public class UserController {
         userRepo.save(user);
 
         String token = RandomStringUtils.random(8,true,true);
-        dynamoService.putItemInTable("Email",user.getUsername(),"Token", token);
+        dynamoService.putItemInTable("email",user.getUsername(),"Token", token);
 
         String link = "http://prod.spicyrice.me/v1/verifyUserEmail?email="
                 + user.getUsername() + "token=" + token;
