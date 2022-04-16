@@ -6,9 +6,9 @@ import com.example.webservice.Dynamoconfig.DynamoService;
 import com.example.webservice.Model.User;
 import com.example.webservice.Model.UserDetail;
 import com.example.webservice.Model.Message;
-import com.example.webservice.SNSConfig.SNSUtil;
 
 import com.example.webservice.Repo.UserRepo;
+import com.example.webservice.SNSConfig.SNSUtil;
 import com.google.gson.Gson;
 import com.timgroup.statsd.StatsDClient;
 import org.apache.commons.lang3.RandomStringUtils;
