@@ -108,6 +108,8 @@ public class UserController {
 
         String returnString=jsonObject.toString();
         logger.info(returnString);
+        return String.format("v12");
+
     }
 
     @PostMapping("/v1/user")
