@@ -570,7 +570,7 @@ Resources:
       DesiredCapacity: '1'
       HealthCheckGracePeriod: 90
       HealthCheckType: EC2
-      MaxSize: '5'
+      MaxSize: '3'
       MinSize: '1'
       NewInstancesProtectedFromScaleIn: false
       Tags:
