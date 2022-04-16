@@ -108,7 +108,7 @@ public class UserController {
 
         String returnString=jsonObject.toString();
         logger.info(returnString);
-        return String.format("v12");
+        return String.format("v 12");
 
     }
 
