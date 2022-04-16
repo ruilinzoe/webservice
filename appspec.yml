@@ -12,7 +12,7 @@ hooks:
   AfterInstall:
     - location: ./codedeploy/afterInstall.sh
       timeout: 180
-  ApplicationStar:
+  ApplicationStart:
     - location: ./codedeploy/applicationStart.sh
       timeout: 180
   ApplicationStop:
