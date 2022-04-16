@@ -42,6 +42,7 @@ public class UserController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    //instance
     @Autowired
     UserRepo userRepo;
 
