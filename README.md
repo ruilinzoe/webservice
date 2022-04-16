@@ -43,3 +43,5 @@ export AWS_PROFILE=demo
 export AWS_REGION=us-west-2
 
 aws cloudformation create-stack --stack-name CICD --template-body file://cicd.yml --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=BucketName,ParameterValue=prod.domain.tld
+
+aws cloudformation create-stack --stack-name db2 --template-body file://cicd.yml --capabilities CAPABILITY_NAMED_IAM

@@ -549,6 +549,9 @@ Resources:
           echo "metrics.server.hostname = localhost" >> /tmp/jdbc.properties
           echo "metrics.server.port = 8125" >> /tmp/jdbc.properties
 
+          echo "aws.dynamodb.tableName = TOKENS" >> /tmp/jdbc.properties
+          echo "sns.topic.arn= arn:aws:sns:us-west-2:574594835790:message" >> /tmp/jdbc.properties
+
           crontab -l | { cat; echo "@reboot (cd /tmp && java -jar webservice-0.0.1-SNAPSHOT.jar --spring.config.location=file:///tmp/jdbc.properties)"; } | crontab -
           cd /tmp
           java -jar webservice-0.0.1-SNAPSHOT.jar --spring.config.location=file:///tmp/jdbc.properties
@@ -700,3 +703,221 @@ Resources:
           AliasTarget:
             HostedZoneId: !GetAtt 'loadBalancer.CanonicalHostedZoneID'
             DNSName: !GetAtt 'loadBalancer.DNSName'
+
+  tokenDynamoDBTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: 'TOKENS'
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: email
+          AttributeType: S
+      KeySchema:
+        - AttributeName: email
+          KeyType: 'HASH'
+      TimeToLiveSpecification:
+        AttributeName: TimeToLive
+        Enabled: true
+
+  sentDynamoDBTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: 'SENTS'
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: email
+          AttributeType: S
+      KeySchema:
+        - AttributeName: email
+          KeyType: 'HASH'
+
+  WebAppSNSTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: 'csye6225-webapp-topic'
+      FifoTopic: 'false'
+      Subscription:
+        - Endpoint: arn:aws:lambda:us-east-1:574594835790:function:vemailFunction
+          Protocol: lambda
+
+  LambdaFunctionPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt VerifyEmailFunction.Arn
+      Principal: sns.amazonaws.com
+
+  VerifyEmailFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: VerifyEmailEvent::handleRequest
+      Role: !GetAtt MyLambdaRole.Arn
+      Code:
+        S3Bucket: csye6225-serverless-bucket-a9
+        S3Key: serverless-1.0-SNAPSHOT.jar
+      Runtime: java11
+      Timeout: 120
+      FunctionName: vemailFunction
+      MemorySize: 512
+
+  MyLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      RoleName: 'Lambda-CSYE6225'
+
+  SESFullAccess:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: SESFullAccess
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'ses:*'
+            Resource: '*'
+      Roles:
+        - !Ref MyLambdaRole
+
+  LambdaExecuteAccess:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: LambdaExecute
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'logs:*'
+            Resource: 'arn:aws:logs:*:*:*'
+      Roles:
+        - !Ref MyLambdaRole
+
+  DynamoFullAccess:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: DynamoFullAccessPolicy
+      Roles:
+        - !Ref MyLambdaRole
+      PolicyDocument:
+        {
+          'Version': '2012-10-17',
+          'Statement':
+            [
+              {
+                'Action':
+                  [
+                    'dynamodb:*',
+                    'dax:*',
+                    'application-autoscaling:DeleteScalingPolicy',
+                    'application-autoscaling:DeregisterScalableTarget',
+                    'application-autoscaling:DescribeScalableTargets',
+                    'application-autoscaling:DescribeScalingActivities',
+                    'application-autoscaling:DescribeScalingPolicies',
+                    'application-autoscaling:PutScalingPolicy',
+                    'application-autoscaling:RegisterScalableTarget',
+                    'cloudwatch:DeleteAlarms',
+                    'cloudwatch:DescribeAlarmHistory',
+                    'cloudwatch:DescribeAlarms',
+                    'cloudwatch:DescribeAlarmsForMetric',
+                    'cloudwatch:GetMetricStatistics',
+                    'cloudwatch:ListMetrics',
+                    'cloudwatch:PutMetricAlarm',
+                    'cloudwatch:GetMetricData',
+                    'datapipeline:ActivatePipeline',
+                    'datapipeline:CreatePipeline',
+                    'datapipeline:DeletePipeline',
+                    'datapipeline:DescribeObjects',
+                    'datapipeline:DescribePipelines',
+                    'datapipeline:GetPipelineDefinition',
+                    'datapipeline:ListPipelines',
+                    'datapipeline:PutPipelineDefinition',
+                    'datapipeline:QueryObjects',
+                    'ec2:DescribeVpcs',
+                    'ec2:DescribeSubnets',
+                    'ec2:DescribeSecurityGroups',
+                    'iam:GetRole',
+                    'iam:ListRoles',
+                    'kms:DescribeKey',
+                    'kms:ListAliases',
+                    'sns:CreateTopic',
+                    'sns:DeleteTopic',
+                    'sns:ListSubscriptions',
+                    'sns:ListSubscriptionsByTopic',
+                    'sns:ListTopics',
+                    'sns:Subscribe',
+                    'sns:Unsubscribe',
+                    'sns:SetTopicAttributes',
+                    'lambda:CreateFunction',
+                    'lambda:ListFunctions',
+                    'lambda:ListEventSourceMappings',
+                    'lambda:CreateEventSourceMapping',
+                    'lambda:DeleteEventSourceMapping',
+                    'lambda:GetFunctionConfiguration',
+                    'lambda:DeleteFunction',
+                    'resource-groups:ListGroups',
+                    'resource-groups:ListGroupResources',
+                    'resource-groups:GetGroup',
+                    'resource-groups:GetGroupQuery',
+                    'resource-groups:DeleteGroup',
+                    'resource-groups:CreateGroup',
+                    'tag:GetResources',
+                    'kinesis:ListStreams',
+                    'kinesis:DescribeStream',
+                    'kinesis:DescribeStreamSummary',
+                  ],
+                'Effect': 'Allow',
+                'Resource': '*',
+              },
+              {
+                'Action': 'cloudwatch:GetInsightRuleReport',
+                'Effect': 'Allow',
+                'Resource': 'arn:aws:cloudwatch:*:*:insight-rule/DynamoDBContributorInsights*',
+              },
+              {
+                'Action': ['iam:PassRole'],
+                'Effect': 'Allow',
+                'Resource': '*',
+                'Condition':
+                  {
+                    'StringLike':
+                      {
+                        'iam:PassedToService':
+                          [
+                            'application-autoscaling.amazonaws.com',
+                            'application-autoscaling.amazonaws.com.cn',
+                            'dax.amazonaws.com',
+                          ],
+                      },
+                  },
+              },
+              {
+                'Effect': 'Allow',
+                'Action': ['iam:CreateServiceLinkedRole'],
+                'Resource': '*',
+                'Condition':
+                  {
+                    'StringEquals':
+                      {
+                        'iam:AWSServiceName':
+                          [
+                            'replication.dynamodb.amazonaws.com',
+                            'dax.amazonaws.com',
+                            'dynamodb.application-autoscaling.amazonaws.com',
+                            'contributorinsights.dynamodb.amazonaws.com',
+                            'kinesisreplication.dynamodb.amazonaws.com',
+                          ],
+                      },
+                  },
+              },
+            ],
+        }
