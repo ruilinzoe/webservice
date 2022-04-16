@@ -209,7 +209,7 @@ public class UserController {
     @GetMapping("/v2/verifyUserEmail")
     @ResponseBody
     public ResponseEntity<?> verifyUser(@RequestParam String email, @RequestParam String token) {
-        Map<String, AttributeValue> queryItem = dynamoService.getDynamoDBItem("Email", email);
+        Map<String, AttributeValue> queryItem = dynamoService.getDynamoDBItem("email", email);
         if (queryItem.size() == 0) {
             return new ResponseEntity(String.format("Not in dynamo"), HttpStatus.NOT_FOUND);
         }
