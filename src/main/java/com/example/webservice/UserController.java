@@ -146,7 +146,7 @@ public class UserController {
         String token = RandomStringUtils.random(8, true, true);
         dynamoService.putItemInTable("email", user.getUsername(), "Token", token);
 
-        String link = "http://prod.spicyrice.me/v2/verifyUserEmail?email="
+        String link = "https://prod.spicyrice.me/v2/verifyUserEmail?email="
                 + user.getUsername() + "&token=" + token;
 
         Message message = new Message();
