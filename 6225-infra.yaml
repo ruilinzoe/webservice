@@ -554,7 +554,7 @@ Resources:
           #!/bin/bash
 
           cd /tmp 
-          touch csye6225.log
+          touch csye6225.log 
           sudo chmod -R 777 /tmp
           echo "logging.file.name =/tmp/csye6225.log" >> /tmp/jdbc.properties
 
@@ -563,6 +563,7 @@ Resources:
           echo "spring.datasource.password =  Zoe123456789!" >> /tmp/jdbc.properties
           echo "spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQL5InnoDBDialect" >> /tmp/jdbc.properties
           echo "spring.jpa.hibernate.ddl-auto = update" >> /tmp/jdbc.properties
+
           echo "aws.access_key_id = ${AccessKeyId}" >> /tmp/jdbc.properties
           echo "aws.secret_access_key= ${AccessKey}" >> /tmp/jdbc.properties
           echo "aws.s3.region= us-west-2" >> /tmp/jdbc.properties

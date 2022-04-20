@@ -42,7 +42,7 @@ export AWS_REGION=us-west-2
 
 aws cloudformation create-stack --stack-name CICD --template-body file://cicd.yml --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=BucketName,ParameterValue=prod.domain.tld
 
-aws cloudformation create-stack --stack-name dynab --template-body file://cicd.yml --capabilities CAPABILITY_NAMED_IAM
+aws cloudformation create-stack --stack-name lambda --template-body file://cicd.yml --capabilities CAPABILITY_NAMED_IAM
 
 # manual start
 
@@ -59,3 +59,5 @@ less /opt/codedeploy-agent/deployment-root/deployment-logs/codedeploy-agent-depl
 # import certificate
 
 aws acm import-certificate --certificate fileb:///Users/ruilin/Desktop/CSYE-6225/prod_spicyrice.me/prod_spicyrice_me.crt --certificate-chain fileb:///Users/ruilin/Desktop/CSYE-6225/prod_spicyrice.me/prod_spicyrice_me.ca-bundle --private-key fileb:///Users/ruilin/Desktop/CSYE-6225/prod_spicyrice.me/private.key
+
+E2 tmp 用 jar
