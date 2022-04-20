@@ -297,9 +297,34 @@ Resources:
       MasterUsername: 'csye6225'
       MasterUserPassword: 'Zoe123456789!'
       PubliclyAccessible: 'false'
+      StorageEncrypted: true
+      KmsKeyId: !Ref rdsKey
       DBSubnetGroupName: !Ref RDSDBSubnetGroup
       MultiAZ: 'false'
       DBParameterGroupName: !Ref DBParameterGroup
+
+  rdsKey:
+    Type: AWS::KMS::Key
+    Properties:
+      KeyPolicy:
+        Version: '2012-10-17'
+        Id: key-rds
+        Statement:
+          - Sid: Enable IAM User Permissions
+            Effect: Allow
+            Principal:
+              AWS: !Join
+                - ''
+                - - 'arn:aws:iam::'
+                  - !Ref 'AWS::AccountId'
+                  - ':root'
+            Action: 'kms:*'
+            Resource: '*'
+  rdsAlias:
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName: alias/rds
+      TargetKeyId: !Ref rdsKey
 
   DBParameterGroup:
     Type: AWS::RDS::DBParameterGroup
@@ -502,10 +527,6 @@ Resources:
       VpcId: !Ref VPC
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
           FromPort: 443
           ToPort: 443
           CidrIp: 0.0.0.0/0
@@ -519,6 +540,7 @@ Resources:
           Ebs:
             VolumeSize: 20
             VolumeType: 'gp3'
+            Encrypted: true
             DeleteOnTermination: true
       ImageId: !Ref CloudImageID
       IamInstanceProfile: !Ref WebInstanceProfile
@@ -532,7 +554,7 @@ Resources:
           #!/bin/bash
 
           cd /tmp 
-          touch csye6225.log
+          touch csye6225.log 
           sudo chmod -R 777 /tmp
           echo "logging.file.name =/tmp/csye6225.log" >> /tmp/jdbc.properties
 
@@ -541,6 +563,7 @@ Resources:
           echo "spring.datasource.password =  Zoe123456789!" >> /tmp/jdbc.properties
           echo "spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQL5InnoDBDialect" >> /tmp/jdbc.properties
           echo "spring.jpa.hibernate.ddl-auto = update" >> /tmp/jdbc.properties
+
           echo "aws.access_key_id = ${AccessKeyId}" >> /tmp/jdbc.properties
           echo "aws.secret_access_key= ${AccessKey}" >> /tmp/jdbc.properties
           echo "aws.s3.region= us-west-2" >> /tmp/jdbc.properties
@@ -684,15 +707,28 @@ Resources:
       UnhealthyThresholdCount: 2
       VpcId: !Ref VPC
 
-  loadBalancerListener:
+  # loadBalancerListener:
+  #   Type: AWS::ElasticLoadBalancingV2::Listener
+  #   Properties:
+  #     DefaultActions:
+  #       - Type: forward
+  #         TargetGroupArn: !Ref loadBalancerTargetGroup
+  #     LoadBalancerArn: !Ref loadBalancer
+  #     Port: 80
+  #     Protocol: HTTP
+
+  loadBalancer443Listener:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
       DefaultActions:
         - Type: forward
           TargetGroupArn: !Ref loadBalancerTargetGroup
+          Order: 1
       LoadBalancerArn: !Ref loadBalancer
-      Port: 80
-      Protocol: HTTP
+      Port: 443
+      Protocol: HTTPS
+      Certificates:
+        - certificateArn: arn:aws:acm:us-west-2:574594835790:certificate/8403f8d6-a663-41b1-841f-f306c53abdfb
 
   myDNSRecord:
     Type: AWS::Route53::RecordSetGroup
