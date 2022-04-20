@@ -107,7 +107,7 @@ public class UserController {
 
         String returnString = jsonObject.toString();
         logger.info(returnString);
-        return String.format("more test");
+        return String.format("Today is Tuesday");
     }
 
     @PostMapping("/v1/user")
