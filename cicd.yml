@@ -19,13 +19,13 @@ Parameters:
     Type: String
     Default: 'a7-bucket'
 
-  AWSProfileKeyID:
-    Type: String
-    Default: 'AKIAYLSEFMVHMNT2QMFH'
+#   AWSProfileKeyID:
+#     Type: String
+#     Default: 
 
-  AWSProfileSecretKey:
-    Type: String
-    Default: 'iGCMHfRojoX4UmuQyAjHd+iVK49Xn+wIFES0TVzM'
+#   AWSProfileSecretKey:
+#     Type: String
+#     Default: 
 
   AWSProfileRegion:
     Type: String
